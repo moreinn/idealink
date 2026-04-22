@@ -10,7 +10,10 @@ export const registerUser = async ({ name, email, password, country, skills, bio
   if (exists) throw new Error('Email already in use');
 
   const hashed = await bcrypt.hash(password, 10);
-  const user = await User.create({ name, email, password: hashed, country, skills, bio, socials });
+  const user = await User.create({
+    name, email, password: hashed,
+    country, skills, bio, socials
+  });
 
   return {
     token: generateToken(user._id),
@@ -67,5 +70,34 @@ export const updateUserSocial = async (userId, { platform, url }) => {
     { new: true }
   ).select('-password');
 
+  return user;
+};
+
+export const updateRole = async (userId, role) => {
+  const allowed = ['founder', 'provider', 'both'];
+  if (!allowed.includes(role)) throw new Error('Invalid role');
+
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { role },
+    { new: true }
+  ).select('-password');
+
+  return user;
+};
+
+export const submitVerification = async (userId, { documentType, documentPath }) => {
+  const user = await User.findByIdAndUpdate(
+    userId,
+    {
+      'verification.status': 'pending',
+      'verification.documentType': documentType,
+      'verification.documentPath': documentPath,
+      'verification.submittedAt': new Date(),
+    },
+    { new: true }
+  ).select('-password');
+
+  if (!user) throw new Error('User not found');
   return user;
 };

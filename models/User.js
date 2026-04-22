@@ -13,6 +13,20 @@ const userSchema = new mongoose.Schema({
   bio: { type: String, default: '' },
   skills: [String],
 
+  role: {
+    type: String,
+    enum: ['founder', 'provider', 'both'],
+    default: 'both',
+  },
+
+  verification: {
+    status: { type: String, enum: ['unverified', 'pending', 'verified', 'rejected'], default: 'unverified' },
+    documentType: { type: String, enum: ['passport', 'national_id', 'drivers_license', ''], default: '' },
+    documentPath: { type: String, default: '' },
+    submittedAt: { type: Date },
+    reviewedAt: { type: Date },
+  },
+
   socials: {
     linkedin:  { type: socialSchema, default: () => ({}) },
     instagram: { type: socialSchema, default: () => ({}) },

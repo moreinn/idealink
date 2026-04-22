@@ -53,3 +53,25 @@ export const updateSocial = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
+
+export const updateRole = async (req, res) => {
+  try {
+    const user = await authService.updateRole(req.user.id, req.body.role);
+    res.json(user);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+export const submitVerification = async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+    const user = await authService.submitVerification(req.user.id, {
+      documentType: req.body.documentType,
+      documentPath: req.file.path,
+    });
+    res.json(user);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
